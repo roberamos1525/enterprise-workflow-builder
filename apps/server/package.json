@@ -1,0 +1,22 @@
+{
+  "name": "@ewb/server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HTTP API, persistence (node:sqlite), triggers and integrations for the workflow engine.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "ewb": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "cli": "node dist/cli.js"
+  },
+  "dependencies": {
+    "@ewb/engine": "0.1.0",
+    "zod": "^4.1.0"
+  }
+}
