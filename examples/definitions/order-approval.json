@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "nodes": [
+    { "id": "hook", "type": "trigger.webhook", "name": "Order received", "position": { "x": 40, "y": 200 }, "config": { "requiredFields": ["orderId", "amount"] } },
+    { "id": "large", "type": "flow.branch", "name": "Amount > 1000?", "position": { "x": 280, "y": 200 }, "config": { "condition": "trigger.amount > 1000" } },
+    { "id": "record", "type": "action.setVariable", "name": "Record order id", "position": { "x": 540, "y": 40 }, "config": { "name": "orderId", "expression": "trigger.orderId" } },
+    { "id": "summary", "type": "action.transform", "name": "Summarise", "position": { "x": 540, "y": 170 }, "config": { "expression": "{ id: trigger.orderId, total: trigger.amount, lines: len(trigger.items ?? []) }" } },
+    { "id": "approve", "type": "action.approval", "name": "Manager approval", "position": { "x": 540, "y": 300 }, "config": { "title": "Approve order {{ trigger.orderId }} ({{ trigger.amount }})", "assignees": ["role:operator"], "timeoutMs": 86400000, "escalateTo": ["role:admin"], "escalationTimeoutMs": 86400000 } },
+    { "id": "decision", "type": "action.setVariable", "name": "Record decision", "position": { "x": 800, "y": 300 }, "config": { "name": "decision", "expression": "input.decision + ' by ' + input.by" } },
+    { "id": "done", "type": "flow.join", "name": "All done", "position": { "x": 1060, "y": 170 }, "config": { "mode": "all" } },
+    { "id": "auto", "type": "action.setVariable", "name": "Auto-approve", "position": { "x": 540, "y": 440 }, "config": { "name": "decision", "expression": "'auto-approved'" } }
+  ],
+  "edges": [
+    { "id": "e1", "source": { "node": "hook", "port": "out" }, "target": { "node": "large", "port": "in" } },
+    { "id": "e2", "source": { "node": "large", "port": "true" }, "target": { "node": "record", "port": "in" } },
+    { "id": "e3", "source": { "node": "large", "port": "true" }, "target": { "node": "summary", "port": "in" } },
+    { "id": "e4", "source": { "node": "large", "port": "true" }, "target": { "node": "approve", "port": "in" } },
+    { "id": "e5", "source": { "node": "approve", "port": "approved" }, "target": { "node": "decision", "port": "in" } },
+    { "id": "e6", "source": { "node": "approve", "port": "rejected" }, "target": { "node": "decision", "port": "in" } },
+    { "id": "e7", "source": { "node": "record", "port": "out" }, "target": { "node": "done", "port": "in" } },
+    { "id": "e8", "source": { "node": "summary", "port": "out" }, "target": { "node": "done", "port": "in" } },
+    { "id": "e9", "source": { "node": "decision", "port": "out" }, "target": { "node": "done", "port": "in" } },
+    { "id": "e10", "source": { "node": "large", "port": "false" }, "target": { "node": "auto", "port": "in" } }
+  ]
+}

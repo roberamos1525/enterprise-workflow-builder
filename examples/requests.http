@@ -1,0 +1,77 @@
+### Sample requests (VS Code REST Client / JetBrains HTTP client format)
+@base = http://127.0.0.1:4000
+@token = paste-a-token-from-login
+
+### Login
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "editor@example.com", "password": "Passw0rd!demo" }
+
+### Node catalog and expression functions
+GET {{base}}/api/catalog
+Authorization: Bearer {{token}}
+
+### Create a workflow (draft)
+POST {{base}}/api/workflows
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Hello", "definition": { "schemaVersion": 1, "nodes": [
+  { "id": "start", "type": "trigger.manual", "name": "Start", "position": { "x": 0, "y": 0 }, "config": {} },
+  { "id": "greet", "type": "action.transform", "name": "Greet", "position": { "x": 260, "y": 0 }, "config": { "expression": "'Hello, ' + trigger.name" } }
+], "edges": [ { "id": "e1", "source": { "node": "start", "port": "out" }, "target": { "node": "greet", "port": "in" } } ] } }
+
+### Validate a definition without saving
+POST {{base}}/api/workflows/wf_xxx/validate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "definition": { "schemaVersion": 1, "nodes": [], "edges": [] } }
+
+### Publish the draft as an immutable version
+POST {{base}}/api/workflows/wf_xxx/publish
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "notes": "first release" }
+
+### Diff version 1 against the current draft
+GET {{base}}/api/workflows/wf_xxx/diff?from=1&to=draft
+Authorization: Bearer {{token}}
+
+### Start a manual run
+POST {{base}}/api/workflows/wf_xxx/runs
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "input": { "name": "Ada" } }
+
+### Run detail (steps + timeline events)
+GET {{base}}/api/runs/run-id
+Authorization: Bearer {{token}}
+
+### Publish an event (event-triggered workflows subscribe by type)
+POST {{base}}/api/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "type": "customer.signup", "payload": { "plan": "pro", "email": "new@customer.test" } }
+
+### Webhook with the shared-secret header (HMAC variant: examples/send-webhook.mjs)
+POST {{base}}/api/hooks/wf_xxx
+X-EWB-Token: the-webhook-secret
+Content-Type: application/json
+
+{ "orderId": "PO-1", "amount": 50 }
+
+### Approve
+POST {{base}}/api/approvals/approval-id/decision
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "decision": "approved", "comment": "ok" }
+
+### Dashboard metrics
+GET {{base}}/api/metrics/summary?days=14
+Authorization: Bearer {{token}}

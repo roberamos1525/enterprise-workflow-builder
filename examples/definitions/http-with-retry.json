@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "nodes": [
+    { "id": "start", "type": "trigger.manual", "name": "Start", "position": { "x": 40, "y": 120 }, "config": { "requiredFields": ["url"] } },
+    { "id": "call", "type": "action.http", "name": "Fetch", "position": { "x": 300, "y": 120 }, "config": { "method": "GET", "url": "{{ trigger.url }}", "headers": { "accept": "application/json" }, "failOnHttpError": true }, "retry": { "maxAttempts": 3, "initialDelayMs": 1000, "backoffMultiplier": 2, "maxDelayMs": 10000 }, "timeoutMs": 10000 },
+    { "id": "ok", "type": "action.setVariable", "name": "Keep status", "position": { "x": 560, "y": 60 }, "config": { "name": "status", "expression": "input.status" } },
+    { "id": "alert", "type": "action.notify", "name": "Alert admins", "position": { "x": 560, "y": 200 }, "config": { "channel": "inApp", "recipients": ["role:admin"], "title": "Fetch failed", "message": "{{ input.error.message }} after {{ input.attempts }} attempts" } }
+  ],
+  "edges": [
+    { "id": "e1", "source": { "node": "start", "port": "out" }, "target": { "node": "call", "port": "in" } },
+    { "id": "e2", "source": { "node": "call", "port": "success" }, "target": { "node": "ok", "port": "in" } },
+    { "id": "e3", "source": { "node": "call", "port": "error" }, "target": { "node": "alert", "port": "in" } }
+  ]
+}
