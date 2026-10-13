@@ -1,0 +1,40 @@
+{
+  "name": "enterprise-workflow-builder",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Visual workflow builder with a durable execution engine, approvals, schedules and webhooks.",
+  "license": "MIT",
+  "author": "Robert Ramos",
+  "type": "module",
+  "workspaces": [
+    "packages/engine",
+    "apps/server",
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "build": "tsc -b packages/engine apps/server && npm run build -w @ewb/web",
+    "typecheck": "tsc -b packages/engine apps/server && tsc -p apps/web/tsconfig.json --noEmit && tsc -p tests/tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev:server": "tsx watch apps/server/src/index.ts",
+    "dev:web": "npm run dev -w @ewb/web",
+    "start": "node apps/server/dist/index.js",
+    "cli": "node apps/server/dist/cli.js",
+    "clean": "node -e \"for (const p of ['packages/engine/dist','apps/server/dist','apps/web/dist']) require('node:fs').rmSync(p,{recursive:true,force:true})\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^24.10.0",
+    "eslint": "^9.39.0",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "globals": "^16.5.0",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^4.1.11"
+  }
+}
