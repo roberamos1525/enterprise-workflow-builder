@@ -1,0 +1,25 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "allowImportingTsExtensions": false,
+    "types": ["node"],
+    "paths": {
+      "@ewb/engine": ["../packages/engine/src/index.ts"]
+    }
+  },
+  "include": [
+    "./**/*.ts",
+    "../packages/engine/src/**/*.test.ts",
+    "../packages/engine/src/__tests__/**/*.ts",
+    "../apps/server/src/**/*.test.ts",
+    "../apps/web/src/**/*.test.ts",
+    "../apps/web/src/**/*.test.tsx",
+    "../vitest.config.ts"
+  ]
+}
