@@ -1,0 +1,16 @@
+# Not built/run locally (Docker is not installed on the dev machine); see README "Limitations".
+services:
+  workflow-builder:
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET (at least 32 characters)}
+      LOG_LEVEL: info
+      # HTTP_ALLOW_LIST: "internal-api.corp.example,10.20.0.0/16"
+    volumes:
+      - ewb-data:/data
+    restart: unless-stopped
+
+volumes:
+  ewb-data:
